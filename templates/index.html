@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Pacientes, Médicos y Citas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro Citas</h1>
+
+        <!-- Formulario para registrar cita -->
+        <form id="form-cita" method="post">
+            <h2>Registrar Cita</h2>
+            <div class="form-group">
+                <label for="nombre_paciente_cita">Nombre del Paciente:</label>
+                <select id="nombre_paciente_cita" name="nombre_paciente_cita" required>
+                    {% for paciente in pacientes %}
+                        <option value="{{ paciente.id }}">{{ paciente.nombre }} {{ paciente.apellido }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nombre_medico_cita">Nombre del Médico:</label>
+                <select id="nombre_medico_cita" name="nombre_medico_cita" required>
+                    {% for medico in medicos %}
+                        <option value="{{ medico.id }}">{{ medico.nombre }} {{ medico.apellido }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="detalles_cita">Detalles de la Cita:</label>
+                <textarea id="detalles_cita" name="detalles_cita" required></textarea>
+            </div>
+            <div class="form-group">
+                <button type="submit">Registrar Cita</button>
+            </div>
+        </form>
+    </div>
+
+
+    <script>
+        document.getElementById('form-cita').addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío del formulario
+
+            // Recopila los datos del formulario
+            var pacienteId = document.getElementById('nombre_paciente_cita').value;
+            var medicoId = document.getElementById('nombre_medico_cita').value;
+            var detalles = document.getElementById('detalles_cita').value;
+
+            // Crea un objeto con los datos a enviar
+            var data = {
+                paciente_id: pacienteId,
+                medico_id: medicoId,
+                detalles: detalles
+            };
+
+            // Realiza una solicitud POST a la API
+            fetch('/citas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la solicitud');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
